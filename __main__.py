@@ -1,7 +1,6 @@
-import calendar
-
 import activate
 import argparse
+import calendar
 import csv
 import io
 

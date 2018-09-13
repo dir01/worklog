@@ -1,3 +1,4 @@
+import calendar
 from datetime import timedelta, date
 from unittest.mock import patch
 
@@ -38,6 +39,16 @@ class TestStats(object):
         })
         with self.patch_today(date(2018, 8, 8)):
             assert stats.week == timedelta(hours=40)
+
+    def test_week_starts_on_monday(self):
+        stats = get_stats({
+            date(2018, 8, 5): timedelta(hours=10),
+            date(2018, 8, 6): timedelta(hours=10),
+            date(2018, 8, 7): timedelta(hours=10),
+            date(2018, 8, 8): timedelta(hours=10),
+        }, start_of_week=calendar.MONDAY)
+        with self.patch_today(date(2018, 8, 8)):
+            assert stats.week == timedelta(hours=30)
 
     def test_month(self):
         stats = get_stats({
