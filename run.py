@@ -2,6 +2,7 @@ import argparse
 import calendar
 import csv
 import io
+from datetime import datetime, timedelta
 
 import requests
 
@@ -59,10 +60,33 @@ def week(week_string):
         ]
 
 
+def holiday(holiday_str):
+    if ':' in holiday_str:
+        date_str, hours_str = holiday_str.split(':')
+    else:
+        date_str = holiday_str
+        hours_str = '0'
+    date = datetime.strptime(date_str, '%d.%m.%y').date()
+    return date, timedelta(hours=int(hours_str))
+
+
+class StoreHoliday(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        result = getattr(namespace, self.dest) or {}
+        for k, v in values:
+            result[k] = v
+        setattr(namespace, self.dest, result)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--url', help='URL of your google spreadsheet',
                     required=True)
 parser.add_argument('--week', help='Comma separated list of weekdays',
                     type=week, default='su,mo,tu,we,th')
-
+parser.add_argument('--holiday',
+                    help='Special day with less or zero hours, '
+                         'e.g: --holiday=09.09.18:3 --holiday=10.09.18 would mean '
+                         'that at September, 9th you worked for three hours, '
+                         'and at September, 10th you didnt work at all',
+                    nargs='*', type=holiday, action=StoreHoliday)
 url = 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCjBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'
