@@ -30,6 +30,11 @@ class TestStats(object):
         with self.patch_today(date(2018, 7, 15)):
             assert stats.day == timedelta(hours=8)
 
+    def test_today_on_empty_day(self):
+        stats = get_stats({})
+        with self.patch_today(date(2018, 7, 15)):
+            assert stats.day == timedelta(0)
+
     def test_week(self):
         stats = get_stats({
             date(2018, 8, 5): timedelta(hours=10),

@@ -10,7 +10,7 @@ class Stats(object):
 
     @property
     def day(self):
-        return self.date_to_timedelta_map[today()]
+        return self.date_to_timedelta_map.get(today(), timedelta(0))
 
     @property
     def week(self):
