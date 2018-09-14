@@ -15,7 +15,7 @@ from transform import get_dt_to_event_map_by_raw_event_list
 
 def run():
     args = parser.parse_args()
-    ideal = IdealStats(hours_per_day=8, work_weekdays=args.week)
+    ideal = IdealStats(hours_per_day=8, work_weekdays=args.week, holidays=args.holiday)
 
     google_csv_url = url
     data = requests.get(google_csv_url).text
