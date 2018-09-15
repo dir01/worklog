@@ -12,24 +12,29 @@ from ideal_stats import IdealStats
 from stats import Stats
 from transform import get_dt_to_event_map_by_raw_event_list
 
+url = 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCjBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'
+
 
 def run():
     args = parser.parse_args()
-    ideal = IdealStats(hours_per_day=8, work_weekdays=args.week, holidays=args.holiday)
+    ideal = IdealStats(
+        hours_per_day=8, work_weekdays=args.week, holidays=args.holiday
+    )
 
     google_csv_url = url
-    data = requests.get(google_csv_url).text
-    raw_log = list(csv.reader(io.StringIO(data, newline=None)))
-
-    dt_event_map = get_dt_to_event_map_by_raw_event_list(raw_log)
-    date_to_timedelta_map = get_date_to_timedelta_map_by_dt_to_event_map(
-        dt_event_map)
-
+    date_to_timedelta_map = get_date_to_timedelta_map_by_csv_url(google_csv_url)
     stats = Stats(date_to_timedelta_map, start_of_week=args.week[0])
 
     formatter = Formatter(stats=stats, ideal=ideal)
     print('''Month:\t{fmt.month}\nWeek:\t{fmt.week}\nDay:\t{fmt.day}'''.format(
         fmt=formatter))
+
+
+def get_date_to_timedelta_map_by_csv_url(google_csv_url):
+    data = requests.get(google_csv_url).text
+    raw_log = list(csv.reader(io.StringIO(data, newline=None)))
+    dt_event_map = get_dt_to_event_map_by_raw_event_list(raw_log)
+    return get_date_to_timedelta_map_by_dt_to_event_map(dt_event_map)
 
 
 def week(week_string):
@@ -89,4 +94,3 @@ parser.add_argument('--holiday',
                          'that at September, 9th you worked for three hours, '
                          'and at September, 10th you didnt work at all',
                     nargs='*', type=holiday, action=StoreHoliday)
-url = 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCjBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'

@@ -8,7 +8,6 @@ class IdealStats(object):
         self.hours_per_day = hours_per_day
         self.work_weekdays = work_weekdays
         self.holidays = holidays or {}
-        print(self.holidays)
 
     @property
     def day(self):

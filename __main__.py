@@ -1,4 +1,3 @@
-import activate
 from run import run
 
 if __name__ == '__main__':
