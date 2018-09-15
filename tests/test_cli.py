@@ -10,6 +10,14 @@ class TestCli(object):
     def test_url_is_required(self):
         self.parse_args('', error='arguments are required: --url')
 
+    def test_spreadsheet_url_is_transformed_to_csv_url(self):
+        args = self.parse_args('--url=https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCtBDwTb6NIksW_nxe_rqWLxkZ0uo/edit#gid=0')
+        assert args.url == 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCtBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'
+
+    def test_code_is_transformed_to_csv_url(self):
+        args = self.parse_args('--url=1DFXwHLqvjB-IOGYCtBDwTb6NIksW_nxe_rqWLxkZ0uo')
+        assert args.url == 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCtBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'
+
     def test_week_without_value(self):
         self.parse_args('--week', error='--week: expected one argument')
 

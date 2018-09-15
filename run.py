@@ -12,7 +12,6 @@ from ideal_stats import IdealStats
 from stats import Stats
 from transform import get_dt_to_event_map_by_raw_event_list
 
-url = 'https://docs.google.com/spreadsheets/d/1DFXwHLqvjB-IOGYCjBDwTb6NIksW_nxe_rqWLxkZ0uo/export?format=csv'
 
 
 def run():
@@ -21,8 +20,7 @@ def run():
         hours_per_day=8, work_weekdays=args.week, holidays=args.holiday
     )
 
-    google_csv_url = url
-    date_to_timedelta_map = get_date_to_timedelta_map_by_csv_url(google_csv_url)
+    date_to_timedelta_map = get_date_to_timedelta_map_by_csv_url(args.url)
     stats = Stats(date_to_timedelta_map, start_of_week=args.week[0])
 
     formatter = Formatter(stats=stats, ideal=ideal)
@@ -83,9 +81,16 @@ class StoreHoliday(argparse.Action):
         setattr(namespace, self.dest, result)
 
 
+def url(url_string):
+    if '/' in url_string:
+        return url_string.rsplit('/', 1)[0] + '/export?format=csv'
+    else:
+        return 'https://docs.google.com/spreadsheets/d/%s/export?format=csv' % url_string
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--url', help='URL of your google spreadsheet',
-                    required=True)
+                    required=True, type=url)
 parser.add_argument('--week', help='Comma separated list of weekdays',
                     type=week, default='su,mo,tu,we,th')
 parser.add_argument('--holiday',
